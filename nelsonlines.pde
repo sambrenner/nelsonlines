@@ -21,20 +21,27 @@ void setupLines() {
 void draw() {
   if(frameCount <= width) {
     for(int i=0; i<numLines; i++) {
-      lines[i].render(frameCount);
+      Line currentLine = lines[i];
+      currentLine.updatePosition();
+      currentLine.render(frameCount);
     }
   }
 }
 
 class Line {
-  private int _offsetX, _offsetY;
+  private int _offsetX, _offsetY, _y;
   
   Line(int offsetX, int offsetY) {
+    _y = 0;
     _offsetX = offsetX;
     _offsetY = offsetY;
   }
   
+  void updatePosition() {
+    _y = _y + floor(random(3)) - 1;
+  }
+  
   void render(int step) {
-    point(_offsetX + step, _offsetY);
+    point(_offsetX + step, _offsetY + _y);
   }
 }
