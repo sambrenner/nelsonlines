@@ -1,47 +1,46 @@
-Line[] lines;
-int interval = 10;
-int numLines;
+// user variables
+int pad = 10; // frame padding
+int xSpacing = 20; // distance between draw points 
+int ySpacing = 4; // distance between lines
+int wander = 1; // randomness in Y position
+
+// don't touch these
+int x=pad;
+int y=pad;
+int px, py;
+int[] prevLineYs;
+int count = 0;
+Boolean firstPoint = true;
+Boolean firstLine = true;
 
 void setup() {
-  size(800,800);
-  background(0);
-  setupLines();
-}
-
-void setupLines() {
-  numLines = floor(height/interval);
-  lines = new Line[numLines];
-  stroke(255);
+  size(500,500);
+  background(255);
+  frameRate(500);
   
-  for(int i=0; i<numLines; i++) {
-    lines[i] = new Line(0, interval * i);
-  }
+  prevLineYs = new int[((width - (2*pad)) / xSpacing) + 1];
 }
 
 void draw() {
-  if(frameCount <= width) {
-    for(int i=0; i<numLines; i++) {
-      Line currentLine = lines[i];
-      currentLine.updatePosition();
-      currentLine.render(frameCount);
-    }
-  }
-}
-
-class Line {
-  private int _offsetX, _offsetY, _y;
+  int wanderY = ((firstLine) ? y : prevLineYs[count] + ySpacing) + round(random(wander * 2)) - wander; 
   
-  Line(int offsetX, int offsetY) {
-    _y = 0;
-    _offsetX = offsetX;
-    _offsetY = offsetY;
+  if(!firstPoint) {
+    line(px,py,x,wanderY);
   }
   
-  void updatePosition() {
-    _y = _y + floor(random(3)) - 1;
-  }
+  prevLineYs[count] = wanderY;
+  px=x;
+  py=wanderY;
+  x+=xSpacing;
+  count++;
   
-  void render(int step) {
-    point(_offsetX + step, _offsetY + _y);
+  if(firstPoint) firstPoint = false;
+  
+  if(x>width-pad) {
+    firstPoint = true;
+    firstLine = false;
+    x=pad;
+    y+=ySpacing;
+    count=0;
   }
 }
