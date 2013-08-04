@@ -1,13 +1,11 @@
 // user variables
 int pad = 10; // frame padding
-int xSpacing = 20; // distance between draw points 
-int ySpacing = 4; // distance between lines
+int xSpacing = 2; // distance between draw points 
+int ySpacing = 5; // distance between lines
 int wander = 1; // randomness in Y position
 
 // don't touch these
-int x=pad;
-int y=pad;
-int px, py;
+int x,y,px,py,pw;
 int[] prevLineYs;
 int count = 0;
 Boolean firstPoint = true;
@@ -18,11 +16,17 @@ void setup() {
   background(255);
   frameRate(500);
   
+  x = y = px = py = pad;
+  pw = 0;
+  
   prevLineYs = new int[((width - (2*pad)) / xSpacing) + 1];
 }
 
 void draw() {
-  int wanderY = ((firstLine) ? y : prevLineYs[count] + ySpacing) + round(random(wander * 2)) - wander; 
+  int w = round(random(wander * 2)) - wander;
+  int wanderY = pw + ((firstLine) ? py : prevLineYs[count] + ySpacing) + w; 
+  
+  wanderY = avg(py,wanderY);
   
   if(!firstPoint) {
     line(px,py,x,wanderY);
@@ -31,6 +35,7 @@ void draw() {
   prevLineYs[count] = wanderY;
   px=x;
   py=wanderY;
+  pw=w;
   x+=xSpacing;
   count++;
   
@@ -42,5 +47,10 @@ void draw() {
     x=pad;
     y+=ySpacing;
     count=0;
+    pw=0;
   }
+}
+
+int avg(int a, int b) {
+  return (a + b) / 2;
 }
